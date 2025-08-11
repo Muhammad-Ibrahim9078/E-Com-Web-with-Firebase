@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" />
+    <script type="module" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body class="container mt-4 bg-body-secondary">
+    <section class="d-flex justify-content-between flex-wrap">
+        <h1>Admin Dashboard</h1>
+        <div class="card-actions justify-end">
+             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">Add Item</button>
+          <button class="btn btn-danger" id="logout">Logout</button>
+        </div>
+    </section>
+    <div class="d-flex align-items-center gap-2">
+        <p><b>Email:</b></p>
+        <p id="emailPr"></p>
+    </div>
+
+    <!-- ADD Modal -->
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add New Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control mb-2" id="iName" placeholder="Item Name" />
+                    <input type="number" class="form-control mb-2" id="iPrice" placeholder="Item Price" />
+                    <textarea class="form-control mb-2" id="ides" placeholder="Item Description"></textarea>
+                    <input type="text" class="form-control mb-2" id="iurl" placeholder="Image URL" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="addItemBtn" class="btn btn-primary">Add Item</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Edit Item</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" class="form-control mb-2" id="edit-item-name" placeholder="Item Name" />
+                    <input type="number" class="form-control mb-2" id="edit-item-price" placeholder="Item Price" />
+                    <textarea class="form-control mb-2" id="edit-item-des" placeholder="Item Description"></textarea>
+                    <input type="text" class="form-control mb-2" id="edit-item-url" placeholder="Image URL" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="saveChanges" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+
+    <hr />
+
+
+
+
+    <!-- Items Print -->
+
+    <h2><u>Products/Items</u></h2>
+    <hr>
+    <br><br><br>
+    <main class="d-flex justify-content-around align-items-center gap-5 flex-wrap " id="itemsPrint"></main>
+
+
+
+    
+
+
+    <!-- footer -->
+
+<footer>
+    
+</footer>
+
+
+
+
+    <script type="module" src="../src/app.js"></script>
+</body>
+
+</html>

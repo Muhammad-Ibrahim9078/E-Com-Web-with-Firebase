@@ -54,7 +54,7 @@ if (getSbtn) {
                 popupText.innerText = "✅ Successfully Create Account!";
             setTimeout(() => {
                 popup.style.display = "none";
-                window.location.replace("../Other Files/login.html");
+                window.location.replace("../html-files/login.html");
             }, 1000);
             })
             .catch((error) => {
@@ -69,6 +69,9 @@ if (getSbtn) {
 
    
   }
+
+
+
 
 
 // Login Method / Function
@@ -87,6 +90,8 @@ if (lbtn) {
     
     let email = document.querySelector("#lemail").value.trim()
     let password = document.querySelector("#lpass").value.trim()
+
+    // This is For Admin
     
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
@@ -101,6 +106,8 @@ if (lbtn) {
                 window.location.replace("dashboard.html");
             }, 1000);
           }
+
+    // This is for Users
   else if(email !== 'adminbro@gmail.com'){      // check email This is Admin or Not
     popup.style.display = "flex";
       popupText.innerText = "Logging in...";
@@ -109,7 +116,7 @@ if (lbtn) {
                 popupText.innerText = "✅ Successfully Logged In!";
             setTimeout(() => {
                 popup.style.display = "none";
-                window.location.replace("../Other Files/userDashboard.html");
+                window.location.replace("userDashboard.html");
             }, 1000);
     
 
@@ -139,7 +146,7 @@ logout.addEventListener("click", ()=>{
 signOut(auth).then(() => {
   // Sign-out successful.
   console.log("logout")
-  window.location.replace("../Other Files/login.html");
+  window.location.replace("login.html");
 }).catch((error) => {
   // An error happened.
 });
@@ -196,17 +203,22 @@ try {
 
 
 // Products/Itmes Print 
+
+
+
+let itemsPrint = document.getElementById("itemsPrint");
+
+if(itemsPrint){
 let prodctsPrinting = async()=>{
-  let itemsPrint = document.getElementById("itemsPrint");
-
-  itemsPrint.innerHTML = ""
   
-
-const querySnapshot = await getDocs(collection(db, "items"));
-querySnapshot.forEach((doc, index) => {
-  // console.log(doc.data());
-  let data =  doc.data();
-
+  
+  itemsPrint.innerHTML = "";
+  
+  const querySnapshot = await getDocs(collection(db, "items"));
+  querySnapshot.forEach((doc, index) => {
+    
+    let data =  doc.data();
+    
   itemsPrint.innerHTML += `
      <section class="card bg-base-100 shadow-sm m-2" style="width: 300px;">
   <figure style="width: 100%; height: 200px; overflow: hidden;">
@@ -225,10 +237,13 @@ querySnapshot.forEach((doc, index) => {
     </div>
   </div>
 </section>`
-
 });
 }
+
 prodctsPrinting()
+}
+
+
 
 
 
@@ -260,6 +275,8 @@ emailinthis()
 
 
 
+
+
 // addToList Function / Method
 
 
@@ -268,12 +285,43 @@ function addtoList(id, name, price, imgUrl){
 alert("Addeed Successfuly")
   let addCardPrint = document.getElementById("addCardPrint");
 
-  addCardPrint.innerHTML = `
+  addCardPrint.innerHTML += `
+  <div class="border">
   <p> ${name} </p>
   <p><b>Price:</b> ${price} </p>
   <img src="${imgUrl}" width="50px" height="50px" alt="${name}">
+  </div>
   `
   
 }
 
 window.addtoList = addtoList;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// check User Login and Not
+
+onAuthStateChanged(auth, (user) => {
+  let currentPage = window.location.pathname;
+
+  // Agar user login nahi hai aur page login/signup nahi hai
+  if (!user && !currentPage.includes("login.html") && !currentPage.includes("signup.html")) {
+    window.location.replace("../html-files/login.html");
+  }
+
+  // Agar user login hai aur page login/signup hai
+  if (user && (currentPage.includes("login.html") || currentPage.includes("signup.html"))) {
+    window.location.replace("../html-files/userDashboard.html"); // ya adminDashboard ka route
+  }
+});

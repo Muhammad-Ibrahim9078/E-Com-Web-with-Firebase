@@ -448,7 +448,7 @@ Swal.fire({
   </div>
   `;
   orderBtnprint.innerHTML = `
-  <button onclick="orderPlace('${id})">Order Place</button>`
+  <button class="btn btn-success" onclick="orderPlace('${id})">Order Place</button>`
   } else {
     Swal.fire("Cancelled", "Your file is safe.", "info");
   }
@@ -492,12 +492,12 @@ window.addtoList = addtoList;
 
 
 async function orderPlace(id) {
-  let itemId = document.getElementById("itemId").value;
-  if(itemId !== ""){
+
 try {
   const docRef = await addDoc(collection(db, "order"), {
-  itemId: id
+  id
   });
+  console.log(id)
   console.log("Document written with ID: ", docRef.id);
   prodctsPrinting()
 
@@ -506,13 +506,11 @@ try {
         text: "Your order has been placed successfully.",
         icon: "success",
         confirmButtonText: "OK"
-      }).then(() => {
-        window.location.reload();
-      });
+      })
+      prodctsPrinting()
 } catch (e) {
   console.error("Error adding document: ", e);
 
-}
 }
 }
 window.orderPlace=orderPlace

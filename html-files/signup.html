@@ -4,40 +4,35 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="../src/output.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>       <!--Sweet Alert CDN-->
 </head>
 <body class="bg-[url(https://img.freepik.com/premium-vector/white-wall-with-blue-shopping-cart-black-mouse-with-empty-tags-laptop-white-surface_1174726-9278.jpg)] bg-cover">
   
   
 
+
   <section class="flex justify-center mt-[80px]">
     <div class="border-2 p-[20px] text-center rounded-2xl  bg-white/70 shadow-[0_0_30px_#3b82f6]"  >
       <h1 class="text-black text-[30px]"><b>SignUp / Create Account</b></h1>
       
+      <!-- Enter Name -->
       <input type="text" placeholder="Enter Full Name" class="border-1 border-gray-700 rounded-[5px] hover:scale-[1.05] pl-[6px] mt-[30px] " id="sname">
       <br>
+      <!-- Enter Email -->
       <input type="email" placeholder="Enter Email" class="border-1 border-gray-700 rounded-[5px] hover:scale-[1.05] mt-[10px] pl-[6px] " id="semail">
       <br>
+      <!-- Enter Password -->
       <input type="password" placeholder="Enter Password" class="border-1 border-gray-700 rounded-[5px] hover:scale-[1.05] mt-[10px] pl-[6px] " id="spass">
       <br><br>
+      <!-- SignUp Button -->
       <button class="btn-primary hover:scale-[1.03]" id="sbtn">SignUp</button>
 
       <br><br><br>
+      <!-- Alerady have Account -->
       <p class="text-gray">Already Have an Account! <a href="login.html" class="text-purple-500 ">Login</a></p>
 
     </div>
   </section>  
-
-
-  <!-- POPUP -->
-<div id="popup" style="display: none; position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; width: 100vw; height: 100vh;" class="fixed inset-0 z-[1000] bg-black bg-opacity-50 flex justify-center items-center rounded-[20px]">
-    <div class="bg-white p-6 rounded-[20px] text-center shadow-lg" role="dialog" aria-live="polite" aria-modal="true">
-        <div class="w-10 h-10 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin mx-auto"></div>
-        <p id="popup-text" class="mt-4 text-gray-700 font-medium"></p>
-    </div>
-</div>
-
-
-
 
 
   <script type="module" src="../src/app.js"></script>

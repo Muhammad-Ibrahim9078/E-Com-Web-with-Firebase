@@ -2,11 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebas
 // Firebase Auth
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged  } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 // Firebase Database
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
-
-
-
-
+import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
 const firebaseConfig = {
@@ -28,129 +24,116 @@ const db = getFirestore(app);
 
 
 
+
+
+
 // Signup Method / Function
 
 let getSbtn = document.querySelector('#sbtn')
-
 if (getSbtn) {
-  
-  let popup = document.getElementById("popup");
-  let popupText = document.getElementById("popup-text");
-  
-    
     getSbtn.addEventListener('click', () => {
-      
-      
-      
-      let email = document.querySelector("#semail").value.trim()
-      let password = document.querySelector("#spass").value.trim()
-      createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        
-              popup.style.display = "flex";
-              popupText.innerText = "Logging in...";
-                const user = userCredential.user;
-                console.log(user.email)
-                popupText.innerText = "✅ Successfully Create Account!";
+    let email = document.querySelector("#semail").value.trim();
+    let password = document.querySelector("#spass").value.trim();
+
+    // Loading alert
+    Swal.fire({
+        title: 'Creating Account...',
+        text: 'Please wait while we set things up for you.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            console.log(user.email);
+            // Success alert
+            Swal.fire({
+                icon: 'success',
+                title: 'Account Created!',
+                text: '✅ Successfully signed up!',
+                timer: 1000,
+                showConfirmButton: false
+            });
             setTimeout(() => {
-                popup.style.display = "none";
                 window.location.replace("../html-files/login.html");
             }, 1000);
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log(errorCode, errorMessage)
-                alert("Enter Correct Email OR 6 Digits Password")
-                // setTimeout(2000, window.location.reload())
+        })
+        .catch((error) => {
+            console.log(error.code, error.message);
 
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Enter a valid email and at least 6-digit password.'
             });
-    })
-
-   
-  }
-
-
-
-
-
-// Login Method / Function
-
-
-let lbtn = document.querySelector("#lbtn")
-
-
-
-if (lbtn) {
-  
-  let popup = document.getElementById("popup");
-  let popupText = document.getElementById("popup-text");
-  
-  lbtn.addEventListener('click', () => {
-    
-    let email = document.querySelector("#lemail").value.trim()
-    let password = document.querySelector("#lpass").value.trim()
-
-    // This is For Admin
-    
-    signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-    if(email === 'adminbro@gmail.com'){         // check email This is Admin or Not
-      popup.style.display = "flex";
-      popupText.innerText = "Logging in...";
-                const user = userCredential.user;
-                console.log(`${user.email} login success`)
-                popupText.innerText = "✅ Successfully Logged In!";
-            setTimeout(() => {
-                popup.style.display = "none";
-                window.location.replace("dashboard.html");
-            }, 1000);
-          }
-
-          
-    // This is for Users
-  else if(email !== 'adminbro@gmail.com'){      // check email This is Admin or Not
-    popup.style.display = "flex";
-      popupText.innerText = "Logging in...";
-                const user = userCredential.user;
-                console.log(`${user.email} login success`)
-                popupText.innerText = "✅ Successfully Logged In!";
-            setTimeout(() => {
-                popup.style.display = "none";
-                window.location.replace("userDashboard.html");
-            }, 1000);
-    
-
-  }
-
-  })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.log(errorCode, errorMessage)
-                alert("Enter Correct Email OR 6 Digits Password")
-            });
-
-    })
-
+        });
+});
 }
 
 
 
-// SignOut/Logout Method / Function
 
 
-let logout = document.getElementById("logout");
-if(logout){
-logout.addEventListener("click", ()=>{
-  const auth = getAuth();
-signOut(auth).then(() => {
-  // Sign-out successful.
-  console.log("logout")
-  window.location.replace("login.html");
-}).catch((error) => {
-  // An error happened.
-});
+
+
+
+
+  
+
+
+// Login Method / Function
+
+let lbtn = document.querySelector("#lbtn")
+if (lbtn) {
+  lbtn.addEventListener('click', () => {
+    let email = document.querySelector("#lemail").value.trim()
+    let password = document.querySelector("#lpass").value.trim()
+
+    Swal.fire({
+      title: 'Logging in...',
+      text: 'Please wait a moment.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+    
+
+
+
+
+
+// This is For Admin Login
+signInWithEmailAndPassword(auth, email, password)
+.then((userCredential) => {
+if(email === 'adminbro@gmail.com'){         // check email This is Admin or Not
+      const user = userCredential.user;
+      window.location.replace("../html-files/admindashboard.html");
+
+  }
+
+
+
+// This is for Users Login
+else if(email !== 'adminbro@gmail.com'){      // check email This is Admin or Not
+          const user = userCredential.user;
+        window.location.replace("../html-files/userDashboard.html");
+}
+})
+  .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage)
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'Enter Correct Email & Password Please Try Again'
+      });
+
+  });
 })
 }
 
@@ -163,10 +146,52 @@ signOut(auth).then(() => {
 
 
 
-// Database
+// SignOut/Logout Method / Function
+let logout = document.getElementById("logout");
+
+if (logout) {
+  logout.addEventListener("click", () => {
+// Sweet Confirm 
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be logged out of this session.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, logout me",
+      cancelButtonText: "Cancel"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const auth = getAuth();
+        signOut(auth).then(() => {
+          Swal.fire({
+            title: "Logged Out",
+            text: "You have been successfully logged out.",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false
+          });
+            window.location.replace("login.html");
+        }).catch((error) => {
+          Swal.fire("Error!", "Something went wrong during logout.", error);
+        });
+      }
+    });
+
+  });
+}
+
+
+
+
+
+
+
+
+// Database Add Items Funtion
 
 let addItemBtn = document.getElementById("addItemBtn");
-
 if(addItemBtn){
 addItemBtn.addEventListener("click", async()=>{
   let itemName = document.getElementById("iName").value;
@@ -184,7 +209,7 @@ try {
   console.log("Document written with ID: ", docRef.id);
   prodctsPrinting()
 
-  // page Reload agter some Seconds
+  // page Reload after some Seconds
   setTimeout(() => {
     window.location.reload();
   }, 100);
@@ -203,24 +228,21 @@ try {
 
 
 
-// Products/Itmes Print 
 
+// User Card Products/Itmes Print in Dom
 
-
-let itemsPrint = document.getElementById("itemsPrint");
-
-if(itemsPrint){
+let userCardPrint = document.getElementById("userCardPrint");
+if(userCardPrint){
 let prodctsPrinting = async()=>{
   
-  
-  itemsPrint.innerHTML = "";
+  userCardPrint.innerHTML = "";
   
   const querySnapshot = await getDocs(collection(db, "items"));
-  querySnapshot.forEach((doc, index) => {
+  querySnapshot.forEach((doc) => {
     
     let data =  doc.data();
-    
-  itemsPrint.innerHTML += `
+
+      userCardPrint.innerHTML += `
      <section class="card bg-base-100 shadow-sm m-2" style="width: 300px;">
   <figure style="width: 100%; height: 200px; overflow: hidden;">
     <img
@@ -240,7 +262,6 @@ let prodctsPrinting = async()=>{
 </section>`
 });
 }
-
 prodctsPrinting()
 }
 
@@ -250,8 +271,129 @@ prodctsPrinting()
 
 
 
+
+
+
+
+
+
+
+
+
+// Admin Cards Products/Items Print in Dom
+
+let adminCardPrint = document.getElementById("adminCardPrint");
+
+if (adminCardPrint) {
+    let prodctsPrinting = async () => {
+        adminCardPrint.innerHTML = "";
+
+        const querySnapshot = await getDocs(collection(db, "items"));
+        querySnapshot.forEach((docSnap) => {
+            let data = docSnap.data();
+
+            adminCardPrint.innerHTML += `
+                <section class="card bg-base-100 shadow-sm m-2" style="width: 300px;">
+                    <figure style="width: 100%; height: 200px; overflow: hidden;">
+                        <img
+                            src="${data.itemurl}"
+                            alt="${data.itemName}"
+                            style="width: 100%; height: 100%; object-fit: contain; display: block; margin: 0 auto;"
+                        />
+                    </figure>
+                    <div class="card-body" style="padding: 10px;">
+                        <h1 class="card-title">${data.itemName}</h1>
+                        <p><b>Description:</b><br>${data.itemdes}</p>
+                        <h4 class="card-title">Rs: ${data.itemPrice}</h4>
+                        <div class="card-actions justify-end">
+                            <button class="btn btn-warning" onclick="editItem('${docSnap.id}', '${data.itemName}', '${data.itemPrice}', '${data.itemdes}', '${data.itemurl}')">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteItem('${docSnap.id}')">Delete</button>
+                        </div>
+                    </div>
+                </section>
+            `;
+        });
+    };
+
+
+    // Edit Product Funtion
+    window.editItem = (id, name, price, des, url) => {
+        Swal.fire({
+            title: "Edit Item",
+            html: `
+                <input id="swal-name" class="swal2-input" placeholder="Name" value="${name}">
+                <input id="swal-price" type="number" class="swal2-input" placeholder="Price" value="${price}">
+                <textarea id="swal-des" class="swal2-textarea" placeholder="Description">${des}</textarea>
+                <input id="swal-url" class="swal2-input" placeholder="Image URL" value="${url}">
+            `,
+            focusConfirm: false,
+            preConfirm: () => {
+                return {
+                    name: document.getElementById("swal-name").value,
+                    price: document.getElementById("swal-price").value,
+                    des: document.getElementById("swal-des").value,
+                    url: document.getElementById("swal-url").value
+                };
+            }
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await updateDoc(doc(db, "items", id), {
+                    itemName: result.value.name,
+                    itemPrice: result.value.price,
+                    itemdes: result.value.des,
+                    itemurl: result.value.url
+                });
+                Swal.fire("Updated!", "Item updated successfully.", "success");
+                prodctsPrinting();
+            }
+        });
+    };
+
+
+    // Delete Product Funtion
+    window.deleteItem = (id) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "This will delete the item permanently!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                await deleteDoc(doc(db, "items", id));
+                Swal.fire("Deleted!", "Item deleted successfully.", "success");
+                prodctsPrinting();
+            }
+        });
+    };
+
+    prodctsPrinting();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// User Email print in Dom
 let emailinthis = ()=>{
-  
 onAuthStateChanged(auth, (user) => {
   let emailPr = document.getElementById("emailPr");
  if (user) {
@@ -281,26 +423,99 @@ emailinthis()
 // addToList Function / Method
 
 
+let addCardPrint = document.getElementById("addCardPrint");
+let orderBtnprint = document.getElementById('orderBtnprint');
+
 function addtoList(id, name, price, imgUrl){
-
-alert("Addeed Successfuly")
-  let addCardPrint = document.getElementById("addCardPrint");
-
+Swal.fire({
+  title: "Are you sure?",
+  text: "This Item Added in Order List!",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "Add",
+  cancelButtonText: "Cancel"
+}).then((result) => {
+  if (result.isConfirmed) {
+    // Add to List InnerHtml
   addCardPrint.innerHTML += `
   <div class="border">
+  <p id="itemId"> ${id} </p>
   <p> ${name} </p>
   <p><b>Price:</b> ${price} </p>
-  <img src="${imgUrl}" width="50px" height="50px" alt="${name}">
+  <img src="${imgUrl}" width="80px" height="80px" alt="${name}">
   </div>
-  `
-  
+  `;
+  orderBtnprint.innerHTML = `
+  <button onclick="orderPlace('${id})">Order Place</button>`
+  } else {
+    Swal.fire("Cancelled", "Your file is safe.", "info");
+  }
+});
 }
-
 window.addtoList = addtoList;
 
 
 
+// Place Order Funtion
 
+// let orderPlace = document.getElementById("orderPlace");
+
+// orderPlace.addEventListener("click", async()=>{
+  
+//   let itemId = document.getElementById("itemId").value;
+//   if(itemId !== ""){
+// try {
+//   const docRef = await addDoc(collection(db, "order"), {
+//   itemId
+//   });
+//   console.log("Document written with ID: ", docRef.id);
+//   prodctsPrinting()
+
+//       Swal.fire({
+//         title: "Success!",
+//         text: "Your order has been placed successfully.",
+//         icon: "success",
+//         confirmButtonText: "OK"
+//       }).then(() => {
+//         window.location.reload();
+//       });
+// } catch (e) {
+//   console.error("Error adding document: ", e);
+
+// }
+// }
+// })
+
+
+
+
+async function orderPlace(id) {
+  let itemId = document.getElementById("itemId").value;
+  if(itemId !== ""){
+try {
+  const docRef = await addDoc(collection(db, "order"), {
+  itemId: id
+  });
+  console.log("Document written with ID: ", docRef.id);
+  prodctsPrinting()
+
+      Swal.fire({
+        title: "Success!",
+        text: "Your order has been placed successfully.",
+        icon: "success",
+        confirmButtonText: "OK"
+      }).then(() => {
+        window.location.reload();
+      });
+} catch (e) {
+  console.error("Error adding document: ", e);
+
+}
+}
+}
+window.orderPlace=orderPlace
 
 
 
@@ -316,13 +531,46 @@ window.addtoList = addtoList;
 onAuthStateChanged(auth, (user) => {
   let currentPage = window.location.pathname;
 
-  // Agar user login nahi hai aur page login/signup nahi hai
+  // Agar login nahi hai
   if (!user && !currentPage.includes("login.html") && !currentPage.includes("signup.html")) {
     window.location.replace("../html-files/login.html");
+    return;
   }
 
-  // Agar user login hai aur page login/signup hai
+  // Agar login hai aur login/signup page pe aaya hai to redirect user
   if (user && (currentPage.includes("login.html") || currentPage.includes("signup.html"))) {
-    window.location.replace("../html-files/userDashboard.html"); // ya adminDashboard ka route
+    if (user.email === "adminbro@gmail.com") {
+      window.location.replace("../html-files/admindashboard.html");
+    } else {
+      window.location.replace("../html-files/userDashboard.html");
+    }
+    return;
+  }
+
+  // Agar current page admin dashboard hai lekin user admin nahi hai
+  if (currentPage.includes("admindashboard.html") && user.email !== "adminbro@gmail.com") {
+    alert("Access Denied! Only Admin Allowed.");
+    window.location.replace("../html-files/userDashboard.html");
+    return;
+  }
+
+  // Agar current page user dashboard hai lekin user admin hai
+  if (currentPage.includes("userDashboard.html") && user.email === "adminbro@gmail.com") {
+    window.location.replace("../html-files/admindashboard.html");
+    return;
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+

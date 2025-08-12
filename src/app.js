@@ -189,36 +189,44 @@ if (logout) {
 
 
 
-// Database Add Items Funtion
+// Database Add New Item
+
+let modalEl = document.getElementById("addModal");
+let modal = new bootstrap.Modal(modalEl);
 
 let addItemBtn = document.getElementById("addItemBtn");
-if(addItemBtn){
-addItemBtn.addEventListener("click", async()=>{
-  let itemName = document.getElementById("iName").value;
-  let itemPrice = document.getElementById("iPrice").value;
-  let itemdes = document.getElementById("ides").value;
-  let itemurl = document.getElementById("iurl").value;
+if (addItemBtn) {
+    addItemBtn.addEventListener("click", async () => {
+        let itemName = document.getElementById("iName").value;
+        let itemPrice = document.getElementById("iPrice").value;
+        let itemdes = document.getElementById("ides").value;
+        let itemurl = document.getElementById("iurl").value;
 
-try {
-  const docRef = await addDoc(collection(db, "items"), {
-    itemName,
-    itemPrice,
-    itemdes,
-    itemurl
-  });
-  console.log("Document written with ID: ", docRef.id);
-  prodctsPrinting()
+        try {
+            modal.hide();
 
-  // page Reload after some Seconds
-  setTimeout(() => {
-    window.location.reload();
-  }, 100);
-} catch (e) {
-  console.error("Error adding document: ", e);
+            const docRef = await addDoc(collection(db, "items"), {
+                itemName,
+                itemPrice,
+                itemdes,
+                itemurl
+            });
 
-}})
+            console.log("Document written with ID: ", docRef.id);
+
+            Swal.fire({
+                title: "Success!",
+                text: "Item has been added successfully.",
+                icon: "success",
+                confirmButtonText: "OK"
+              }).then(() => {
+                  window.location.reload();
+              });
+        } catch (e) {
+            console.error("Error adding document: ", e);
+        }
+    });
 }
-
 
 
 

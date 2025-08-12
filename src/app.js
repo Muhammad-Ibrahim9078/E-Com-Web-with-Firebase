@@ -191,11 +191,11 @@ if (logout) {
 
 // Database Add New Item
 
-let modalEl = document.getElementById("addModal");
-let modal = new bootstrap.Modal(modalEl);
 
 let addItemBtn = document.getElementById("addItemBtn");
 if (addItemBtn) {
+  let modalEl = document.getElementById("addModal");
+  let modal = new bootstrap.Modal(modalEl);
     addItemBtn.addEventListener("click", async () => {
         let itemName = document.getElementById("iName").value;
         let itemPrice = document.getElementById("iPrice").value;
@@ -241,7 +241,8 @@ if (addItemBtn) {
 
 let userCardPrint = document.getElementById("userCardPrint");
 if(userCardPrint){
-let prodctsPrinting = async()=>{
+
+let prPrint = async()=>{
   
   userCardPrint.innerHTML = "";
   
@@ -270,11 +271,8 @@ let prodctsPrinting = async()=>{
 </section>`
 });
 }
-prodctsPrinting()
+prPrint()
 }
-
-
-
 
 
 
@@ -452,7 +450,7 @@ Swal.fire({
   <p id="itemId"> ${id} </p>
   <p> ${name} </p>
   <p><b>Price:</b> ${price} </p>
-  <img src="${imgUrl}" width="80px" height="80px" alt="${name}">
+  <img src="${imgUrl}" width="90px" alt="${name}">
   </div>
   `;
   orderBtnprint.innerHTML = `

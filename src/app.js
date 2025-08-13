@@ -476,23 +476,38 @@ window.changeQty = changeQty;
 
 function renderCart() {
   addCardPrint.innerHTML = "";
-  objItems.forEach(item => {
+  let totalAmount = 0; // total ka counter
+
+  objItems.forEach((item, index) => {
+    let itemTotal = item.price * item.qty; // item ka total
+    totalAmount += itemTotal; // total me add
+
     addCardPrint.innerHTML += `
-      <div class="border p-2">
+      <div class="border p-2 mb-2">
         <p>${item.name}</p>
-        <p><b>Rs:</b>${item.price}</p>
+        <p><b>Rs:</b> ${item.price}</p>
         <p><b>Qty:</b> 
-        <br>
+          <br>
           <button onclick="changeQty('${item.id}','minus')">-</button>
           ${item.qty}
           <button onclick="changeQty('${item.id}','plus')">+</button>
         </p>
         <img src="${item.imgUrl}" width="90px" alt="${item.name}">
+        <br>
+        <button class="btn btn-danger btn-sm" onclick="deleteItem(${index})">Delete</button>
       </div>
     `;
   });
 
   if (objItems.length > 0) {
+    // Total amount show karo
+    addCardPrint.innerHTML += `
+      <div class="border p-2 mt-2 bg-light">
+        <h4>Total Amount: Rs ${totalAmount}</h4>
+      </div>
+    `;
+
+    // Place Order Button
     orderBtnprint.innerHTML = `
       <button class="btn btn-success" onclick="orderPlace()">Place Order</button>
     `;
@@ -502,55 +517,69 @@ function renderCart() {
 }
 
 
-// Order Place Funtion
-async function orderPlace() {
-      // Loading alert
-    Swal.fire({
-        title: 'Order Now...',
-        text: 'Please wait...',
-        allowOutsideClick: false,
-        didOpen: () => {
-            Swal.showLoading();
-        }
-    });
-
-  if (objItems.length === 0) {
-    Swal.fire("No items!", "Please add some products before placing an order.", "info");
-    return;
-  }
-
-  try {
-    const docRef = await addDoc(collection(db, "order"), {
-      items: objItems,
-      createdAt: new Date()
-    });
-
-    Swal.fire({
-      title: "Success!",
-      text: "Your order has been placed successfully.",
-      icon: "success",
-      confirmButtonText: "OK"
-    }).then(() => {
-      objItems = [];
-      addCardPrint.innerHTML = "";
-      orderBtnprint.innerHTML = "";
-    });
-
-  } catch (e) {
-    console.error("Error adding order:", e);
-    Swal.fire("Error!", "Failed to place order.", "error");
-  }
+function deleteItem(index) {
+  objItems.splice(index, 1); // array se item remove
+  renderCart(); // UI refresh
 }
+window.deleteItem = deleteItem;
+
+
+
+// Order Place Function
+async function orderPlace() {
+
+  // Pehle confirmation alert
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you want to confirm your order?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Yes, place order',
+    cancelButtonText: 'No, cancel'
+  }).then(async (result) => {
+    if (!result.isConfirmed) return; // Agar cancel kare to kuch na ho
+
+    // Loading alert
+    Swal.fire({
+      title: 'Order Now...',
+      text: 'Please wait...',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    if (objItems.length === 0) {
+      Swal.fire("No items!", "Please add some products before placing an order.", "info");
+      return;
+    }
+
+    try {
+      const docRef = await addDoc(collection(db, "order"), {
+        items: objItems,
+        createdAt: new Date()
+      });
+
+      Swal.fire({
+        title: "Success!",
+        text: "Your order has been placed successfully.",
+        icon: "success",
+        confirmButtonText: "OK"
+      }).then(() => {
+        objItems = [];
+        addCardPrint.innerHTML = "";
+        orderBtnprint.innerHTML = "";
+      });
+
+    } catch (e) {
+      console.error("Error adding order:", e);
+      Swal.fire("Error!", "Failed to place order.", "error");
+    }
+
+  });
+}
+
 window.orderPlace = orderPlace;
-
-
-
-
-
-
-
-
-
 
 
 

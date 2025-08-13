@@ -426,100 +426,129 @@ emailinthis()
 
 
 
-// addToList Function / Method
+const addCardPrint   = document.getElementById("addCardPrint");
+const orderBtnprint  = document.getElementById("orderBtnprint");
 
 
-let addCardPrint = document.getElementById("addCardPrint");
-let orderBtnprint = document.getElementById('orderBtnprint');
+let objItems = [];
 
-function addtoList(id, name, price, imgUrl){
-Swal.fire({
-  title: "Are you sure?",
-  text: "This Item Added in Order List!",
-  icon: "warning",
-  showCancelButton: true,
-  confirmButtonColor: "#3085d6",
-  cancelButtonColor: "#d33",
-  confirmButtonText: "Add",
-  cancelButtonText: "Cancel"
-}).then((result) => {
-  if (result.isConfirmed) {
-    // Add to List InnerHtml
-  addCardPrint.innerHTML += `
-  <div class="border">
-  <p id="itemId"> ${id} </p>
-  <p> ${name} </p>
-  <p><b>Price:</b> ${price} </p>
-  <img src="${imgUrl}" width="90px" alt="${name}">
-  </div>
-  `;
-  orderBtnprint.innerHTML = `
-  <button class="btn btn-success" onclick="orderPlace('${id})">Order Place</button>`
-  } else {
-    Swal.fire("Cancelled", "Your file is safe.", "info");
-  }
-});
+function addtoList(id, name, price, imgUrl) {
+  Swal.fire({
+    title: "Are you sure?",
+    text: "This item will be added to your order list!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Add",
+    cancelButtonText: "Cancel"
+  }).then((result) => {
+    if (result.isConfirmed) {
+      
+      // Check if product already exists in cart
+      let existingItem = objItems.find(item => item.id === id);
+      if (existingItem) {
+        existingItem.qty += 1;
+      } else {
+        objItems.push({ id, name, price, imgUrl, qty: 1 });
+      }
+
+      renderCart();
+    }
+  });
 }
 window.addtoList = addtoList;
 
 
+// Quantity Funtion
+function changeQty(id, type) {
+  let item = objItems.find(i => i.id === id);
+  if (item) {
+    if (type === "plus") {
+      item.qty += 1;
+    } else if (type === "minus" && item.qty > 1) {
+      item.qty -= 1;
+    }
+    renderCart();
+  }
+}
+window.changeQty = changeQty;
 
-// Place Order Funtion
-
-// let orderPlace = document.getElementById("orderPlace");
-
-// orderPlace.addEventListener("click", async()=>{
-  
-//   let itemId = document.getElementById("itemId").value;
-//   if(itemId !== ""){
-// try {
-//   const docRef = await addDoc(collection(db, "order"), {
-//   itemId
-//   });
-//   console.log("Document written with ID: ", docRef.id);
-//   prodctsPrinting()
-
-//       Swal.fire({
-//         title: "Success!",
-//         text: "Your order has been placed successfully.",
-//         icon: "success",
-//         confirmButtonText: "OK"
-//       }).then(() => {
-//         window.location.reload();
-//       });
-// } catch (e) {
-//   console.error("Error adding document: ", e);
-
-// }
-// }
-// })
-
-
-
-
-async function orderPlace(id) {
-
-try {
-  const docRef = await addDoc(collection(db, "order"), {
-  id
+function renderCart() {
+  addCardPrint.innerHTML = "";
+  objItems.forEach(item => {
+    addCardPrint.innerHTML += `
+      <div class="border p-2">
+        <p>${item.name}</p>
+        <p><b>Rs:</b>${item.price}</p>
+        <p><b>Qty:</b> 
+        <br>
+          <button onclick="changeQty('${item.id}','minus')">-</button>
+          ${item.qty}
+          <button onclick="changeQty('${item.id}','plus')">+</button>
+        </p>
+        <img src="${item.imgUrl}" width="90px" alt="${item.name}">
+      </div>
+    `;
   });
-  console.log(id)
-  console.log("Document written with ID: ", docRef.id);
-  prodctsPrinting()
 
-      Swal.fire({
-        title: "Success!",
-        text: "Your order has been placed successfully.",
-        icon: "success",
-        confirmButtonText: "OK"
-      })
-      prodctsPrinting()
-} catch (e) {
-  console.error("Error adding document: ", e);
+  if (objItems.length > 0) {
+    orderBtnprint.innerHTML = `
+      <button class="btn btn-success" onclick="orderPlace()">Place Order</button>
+    `;
+  } else {
+    orderBtnprint.innerHTML = "";
+  }
+}
 
+
+// Order Place Funtion
+async function orderPlace() {
+      // Loading alert
+    Swal.fire({
+        title: 'Order Now...',
+        text: 'Please wait...',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+  if (objItems.length === 0) {
+    Swal.fire("No items!", "Please add some products before placing an order.", "info");
+    return;
+  }
+
+  try {
+    const docRef = await addDoc(collection(db, "order"), {
+      items: objItems,
+      createdAt: new Date()
+    });
+
+    Swal.fire({
+      title: "Success!",
+      text: "Your order has been placed successfully.",
+      icon: "success",
+      confirmButtonText: "OK"
+    }).then(() => {
+      objItems = [];
+      addCardPrint.innerHTML = "";
+      orderBtnprint.innerHTML = "";
+    });
+
+  } catch (e) {
+    console.error("Error adding order:", e);
+    Swal.fire("Error!", "Failed to place order.", "error");
+  }
 }
-}
-window.orderPlace=orderPlace
+window.orderPlace = orderPlace;
+
+
+
+
+
+
+
 
 
 

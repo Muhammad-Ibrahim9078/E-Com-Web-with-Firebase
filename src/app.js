@@ -527,8 +527,6 @@ window.deleteItem = deleteItem;
 
 // Order Place Function
 async function orderPlace() {
-
-  // Pehle confirmation alert
   Swal.fire({
     title: 'Are you sure?',
     text: 'Do you want to confirm your order?',
@@ -536,50 +534,75 @@ async function orderPlace() {
     showCancelButton: true,
     confirmButtonText: 'Yes, place order',
     cancelButtonText: 'No, cancel'
-  }).then(async (result) => {
-    if (!result.isConfirmed) return; // Agar cancel kare to kuch na ho
-
-    // Loading alert
-    Swal.fire({
-      title: 'Order Now...',
-      text: 'Please wait...',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    });
+  }).then((result) => {
+    if (!result.isConfirmed) return;
 
     if (objItems.length === 0) {
       Swal.fire("No items!", "Please add some products before placing an order.", "info");
       return;
     }
 
-    try {
-      const docRef = await addDoc(collection(db, "order"), {
-        items: objItems,
-        createdAt: new Date()
-      });
+    // Bootstrap modal open
+    let orderModal = new bootstrap.Modal(document.getElementById('orderFormModal'));
+    orderModal.show();
+
+    // Form submit event
+    document.getElementById("orderForm").onsubmit = async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('modal-name').value.trim();
+      const phone = document.getElementById('modal-phone').value.trim();
+      const address = document.getElementById('modal-address').value.trim();
+
+      if (!name || !phone || !address) {
+        Swal.fire("Error!", "Please fill all fields.", "error");
+        return;
+      }
 
       Swal.fire({
-        title: "Success!",
-        text: "Your order has been placed successfully.",
-        icon: "success",
-        confirmButtonText: "OK"
-      }).then(() => {
-        objItems = [];
-        addCardPrint.innerHTML = "";
-        orderBtnprint.innerHTML = "";
+        title: 'Placing Order...',
+        text: 'Please wait...',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
       });
 
-    } catch (e) {
-      console.error("Error adding order:", e);
-      Swal.fire("Error!", "Failed to place order.", "error");
-    }
+      try {
+        await addDoc(collection(db, "order"), {
+          items: objItems,
+          userDetails: { name, phone, address },
+          createdAt: new Date()
+        });
 
+        Swal.fire({
+          title: "Success!",
+          text: "Your order has been placed successfully.",
+          icon: "success",
+          confirmButtonText: "OK"
+        }).then(() => {
+          objItems = [];
+          addCardPrint.innerHTML = "";
+          orderBtnprint.innerHTML = "";
+        });
+
+        orderModal.hide(); // Close modal
+      } catch (e) {
+        console.error("Error adding order:", e);
+        Swal.fire("Error!", "Failed to place order.", "error");
+      }
+    };
   });
 }
 
 window.orderPlace = orderPlace;
+
+
+
+
+
+
+
 
 
 
